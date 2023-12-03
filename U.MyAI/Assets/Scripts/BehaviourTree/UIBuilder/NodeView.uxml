@@ -1,0 +1,24 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <Style src="project://database/Assets/Scripts/UIBuilder/NodeViewStyle.uss?fileID=7433441132597879392&amp;guid=7f7a4f85517136b41b0c78ee32fcd62f&amp;type=3#NodeViewStyle" />
+    <ui:VisualElement name="node-state" />
+    <ui:VisualElement name="node-border">
+        <ui:VisualElement name="contents">
+            <ui:VisualElement name="top">
+                <ui:VisualElement name="input" tabindex="0" usage-hints="None" focusable="false" style="align-items: center; bottom: auto; margin-top: auto;" />
+                <ui:VisualElement name="divider" class="horizontal" />
+                <ui:VisualElement name="title">
+                    <ui:Label name="title-label" text="SequencerNode" class="unity-text-element unity-label" />
+                    <ui:VisualElement name="title-button-container">
+                        <ui:VisualElement name="collapse-button">
+                            <ui:VisualElement name="icon" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+                <ui:Label text="*Description*" display-tooltip-when-elided="true" name="description" />
+                <ui:VisualElement name="divider" class="vertical" />
+                <ui:VisualElement name="output" focusable="false" style="align-items: center; justify-content: flex-start; top: auto;" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="selection-border" picking-mode="Ignore" />
+</ui:UXML>

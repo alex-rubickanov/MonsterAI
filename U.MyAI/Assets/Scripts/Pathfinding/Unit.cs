@@ -9,10 +9,6 @@ namespace Pathfinding
 		const float minPathUpdateTime = .2f;
 		const float pathUpdateMoveThreshold = .5f;
 
-		public Transform playerTarget;
-
-		public Transform[] patrolPoints;
-		
 		public float speed = 20;
 		public float turnSpeed = 3;
 		public float turnDst = 5;
@@ -20,38 +16,27 @@ namespace Pathfinding
 
 		Path path;
 
-		private void Start()
+		public void GoTo(Transform target)
 		{
-			StartCoroutine(nameof(UpdatePathPlayer));
+			StopAllCoroutines();
+			StartCoroutine(UpdatePath(target));
 		}
-
-		IEnumerator UpdatePathPatrol() {
-
+		
+		IEnumerator UpdatePath(Transform target) 
+		{
 			if (Time.timeSinceLevelLoad < .3f) {
 				yield return new WaitForSeconds (.3f);
 			}
-
-			int randomIndex = Random.Range(0, patrolPoints.Length);
-			Transform randomPatrolPoint = patrolPoints[randomIndex];
-			
-			PathRequestManager.RequestPath (transform.position, randomPatrolPoint.position, OnPathFound);
-		}
-
-		IEnumerator UpdatePathPlayer() {
-
-			if (Time.timeSinceLevelLoad < .3f) {
-				yield return new WaitForSeconds (.3f);
-			}
-			PathRequestManager.RequestPath (transform.position, playerTarget.position, OnPathFound);
+			PathRequestManager.RequestPath (transform.position, target.position, OnPathFound);
 
 			float sqrMoveThreshold = pathUpdateMoveThreshold * pathUpdateMoveThreshold;
-			Vector3 targetPosOld = playerTarget.position;
+			Vector3 targetPosOld = target.position;
 
 			while (true) {
 				yield return new WaitForSeconds (minPathUpdateTime);
-				if ((playerTarget.position - targetPosOld).sqrMagnitude > sqrMoveThreshold) {
-					PathRequestManager.RequestPath (transform.position, playerTarget.position, OnPathFound);
-					targetPosOld = playerTarget.position;
+				if ((target.position - targetPosOld).sqrMagnitude > sqrMoveThreshold) {
+					PathRequestManager.RequestPath (transform.position, target.position, OnPathFound);
+					targetPosOld = target.position;
 				}
 			}
 		}
@@ -69,6 +54,7 @@ namespace Pathfinding
 
 			bool followingPath = true;
 			int pathIndex = 0;
+			
 			transform.LookAt (path.lookPoints [0]);
 
 			float speedPercent = 1;
@@ -105,7 +91,7 @@ namespace Pathfinding
 
 		public void OnDrawGizmos() {
 			if (path != null) {
-				path.DrawWithGizmos ();
+				//path.DrawWithGizmos ();
 			}
 		}
 	}

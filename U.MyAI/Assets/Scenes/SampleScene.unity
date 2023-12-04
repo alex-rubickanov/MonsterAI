@@ -136,7 +136,6 @@ GameObject:
   - component: {fileID: 18470008}
   - component: {fileID: 18470007}
   - component: {fileID: 18470011}
-  - component: {fileID: 18470012}
   m_Layer: 0
   m_Name: Seeker
   m_TagString: Untagged
@@ -244,24 +243,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da73ebbb9a14acf47b012e1261b478f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 672113742}
+  playerTarget: {fileID: 672113742}
+  patrolPoints: []
   speed: 3
   turnSpeed: 3
   turnDst: 5
   stoppingDst: 10
---- !u!114 &18470012
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 18470006}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 006bbaa708058ad46a98ad1509550dba, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  tree: {fileID: 11400000, guid: e845bb6e69b4a9a4f9a9f582bd1ae7a9, type: 2}
 --- !u!1 &62809542
 GameObject:
   m_ObjectHideFlags: 0
@@ -1202,6 +1189,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2088948747095046895, guid: 82e3badd94edfb9408acf78208378547,
         type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2088948747095046895, guid: 82e3badd94edfb9408acf78208378547,
+        type: 3}
       propertyPath: m_TagString
       value: Player
       objectReference: {fileID: 0}
@@ -1264,6 +1256,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_TagString
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 6360825289372721653, guid: 82e3badd94edfb9408acf78208378547,
+        type: 3}
+      propertyPath: far clip plane
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 6360825289372721653, guid: 82e3badd94edfb9408acf78208378547,
         type: 3}

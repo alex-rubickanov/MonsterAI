@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Pathfinding
 {
@@ -8,7 +9,10 @@ namespace Pathfinding
 		const float minPathUpdateTime = .2f;
 		const float pathUpdateMoveThreshold = .5f;
 
-		public Transform target;
+		public Transform playerTarget;
+
+		public Transform[] patrolPoints;
+		
 		public float speed = 20;
 		public float turnSpeed = 3;
 		public float turnDst = 5;
@@ -16,35 +20,48 @@ namespace Pathfinding
 
 		Path path;
 
-		void Start() {
-			StartCoroutine (UpdatePath ());
+		private void Start()
+		{
+			StartCoroutine(nameof(UpdatePathPlayer));
 		}
 
+		IEnumerator UpdatePathPatrol() {
+
+			if (Time.timeSinceLevelLoad < .3f) {
+				yield return new WaitForSeconds (.3f);
+			}
+
+			int randomIndex = Random.Range(0, patrolPoints.Length);
+			Transform randomPatrolPoint = patrolPoints[randomIndex];
+			
+			PathRequestManager.RequestPath (transform.position, randomPatrolPoint.position, OnPathFound);
+		}
+
+		IEnumerator UpdatePathPlayer() {
+
+			if (Time.timeSinceLevelLoad < .3f) {
+				yield return new WaitForSeconds (.3f);
+			}
+			PathRequestManager.RequestPath (transform.position, playerTarget.position, OnPathFound);
+
+			float sqrMoveThreshold = pathUpdateMoveThreshold * pathUpdateMoveThreshold;
+			Vector3 targetPosOld = playerTarget.position;
+
+			while (true) {
+				yield return new WaitForSeconds (minPathUpdateTime);
+				if ((playerTarget.position - targetPosOld).sqrMagnitude > sqrMoveThreshold) {
+					PathRequestManager.RequestPath (transform.position, playerTarget.position, OnPathFound);
+					targetPosOld = playerTarget.position;
+				}
+			}
+		}
+		
 		public void OnPathFound(Vector3[] waypoints, bool pathSuccessful) {
 			if (pathSuccessful) {
 				path = new Path(waypoints, transform.position, turnDst, stoppingDst);
 
 				StopCoroutine("FollowPath");
 				StartCoroutine("FollowPath");
-			}
-		}
-
-		IEnumerator UpdatePath() {
-
-			if (Time.timeSinceLevelLoad < .3f) {
-				yield return new WaitForSeconds (.3f);
-			}
-			PathRequestManager.RequestPath (transform.position, target.position, OnPathFound);
-
-			float sqrMoveThreshold = pathUpdateMoveThreshold * pathUpdateMoveThreshold;
-			Vector3 targetPosOld = target.position;
-
-			while (true) {
-				yield return new WaitForSeconds (minPathUpdateTime);
-				if ((target.position - targetPosOld).sqrMagnitude > sqrMoveThreshold) {
-					PathRequestManager.RequestPath (transform.position, target.position, OnPathFound);
-					targetPosOld = target.position;
-				}
 			}
 		}
 

@@ -27,7 +27,10 @@ public class EnemyController : MonoBehaviour
 
     private void Start()
     {
-        unit.GoTo(GetRandomPatrolPoint());
+        if (!seePlayer)
+        {
+            unit.GoTo(GetRandomPatrolPoint());
+        }
         timer = followTimeAfterEscape;
     }
 
@@ -38,7 +41,7 @@ public class EnemyController : MonoBehaviour
         if (savedSeePlayer == seePlayer && seePlayer)
         {
             state = EnemyState.FollowPlayer;
-            unit.GoTo(playerTarget);
+            unit.GoTo(unit.playerTransform);
             savedSeePlayer = !seePlayer;
         }
 

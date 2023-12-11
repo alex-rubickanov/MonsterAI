@@ -1,11 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 namespace Pathfinding
 {
-	public class Unit : MonoBehaviour {
-
+	public class Unit : MonoBehaviour
+	{
+		public Transform playerTransform;
+		
 		const float minPathUpdateTime = .2f;
 		const float pathUpdateMoveThreshold = .5f;
 
@@ -16,14 +18,35 @@ namespace Pathfinding
 
 		Path path;
 
+		public bool isCoroutineFinished = false;
+		public Action OnCoroutineFinishedCallback;
+
+		public LayerMask mask;
+		public float followTimeAfterEscape;	
+		public Transform[] patrolPoints;
+
+
+		private void Start()
+		{
+			OnCoroutineFinishedCallback += FinishCoroutine;
+		}
+
 		public void GoTo(Transform target)
 		{
 			StopAllCoroutines();
-			StartCoroutine(UpdatePath(target));
+			StartCoroutine(GoTo_Coroutine(target));
 		}
 		
-		IEnumerator UpdatePath(Transform target) 
+		public void Follow(Transform target)
 		{
+			StopAllCoroutines();
+			StartCoroutine(Follow_Coroutine(target));
+		}
+		
+		IEnumerator Follow_Coroutine(Transform target)
+		{
+			isCoroutineFinished = false;
+			
 			if (Time.timeSinceLevelLoad < .3f) {
 				yield return new WaitForSeconds (.3f);
 			}
@@ -39,6 +62,19 @@ namespace Pathfinding
 					targetPosOld = target.position;
 				}
 			}
+		}
+		
+		public IEnumerator GoTo_Coroutine(Transform target)
+		{
+			isCoroutineFinished = false;
+			
+			if (Time.timeSinceLevelLoad < .3f) {
+				yield return new WaitForSeconds (.3f);
+			}
+			PathRequestManager.RequestPath (transform.position, target.position, OnPathFound);
+
+			float sqrMoveThreshold = pathUpdateMoveThreshold * pathUpdateMoveThreshold;
+			Vector3 targetPosOld = target.position;
 		}
 		
 		public void OnPathFound(Vector3[] waypoints, bool pathSuccessful) {
@@ -64,6 +100,7 @@ namespace Pathfinding
 				while (path.turnBoundaries [pathIndex].HasCrossedLine (pos2D)) {
 					if (pathIndex == path.finishLineIndex) {
 						followingPath = false;
+						OnCoroutineFinishedCallback?.Invoke();
 						break;
 					} else {
 						pathIndex++;
@@ -73,7 +110,7 @@ namespace Pathfinding
 				if (followingPath) {
 
 					if (pathIndex >= path.slowDownIndex && stoppingDst > 0) {
-						speedPercent = Mathf.Clamp01 (path.turnBoundaries [path.finishLineIndex].DistanceFromPoint (pos2D) / stoppingDst);
+						//speedPercent = Mathf.Clamp01 (path.turnBoundaries [path.finishLineIndex].DistanceFromPoint (pos2D) / stoppingDst);
 						if (speedPercent < 0.01f) {
 							followingPath = false;
 						}
@@ -85,8 +122,13 @@ namespace Pathfinding
 				}
 
 				yield return null;
-
 			}
+		}
+
+		private void FinishCoroutine()
+		{
+			isCoroutineFinished = true;
+
 		}
 
 		public void OnDrawGizmos() {
